@@ -10,6 +10,8 @@ import (
 	"github.com/cokeBeer/goot/pkg/dataflow/toolkits/scalar"
 	"github.com/cokeBeer/goot/pkg/dataflow/util/entry"
 	"github.com/dnote/color"
+
+	// "github.com/cokeBeer/goot/pkg/example/dataflow/typeassertion/utils"
 	"golang.org/x/tools/go/ssa"
 )
 
