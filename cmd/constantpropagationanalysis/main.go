@@ -6,17 +6,31 @@ import (
 
 const src = `package main
 
-func Hello(a int, b int) bool {
-	a = 1
-	x := a + 3
-	y := b + 2
-	if x > y {
-		x = x + 1
+type I interface{
+	// Run()
+}
+
+type A struct {
+    a int
+    b int
+}
+
+type B struct {
+    a int
+    b int
+}
+
+func Hello() int {
+	var a A
+	var b B
+	var i I
+	x := 1
+	if x < 1 {
+		i = a
 	} else {
-		x = y + 1
+		i = b 
 	}
-	w := x > 0
-	return w
+	return i.(int)
 }`
 
 func main() {
