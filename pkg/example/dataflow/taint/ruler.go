@@ -3,7 +3,7 @@ package taint
 import (
 	"go/types"
 	"strings"
-
+	"fmt"
 	"github.com/cokeBeer/goot/pkg/example/dataflow/taint/rule"
 	"golang.org/x/tools/go/ssa"
 )
@@ -180,13 +180,25 @@ func (r *DummyRuler) IsSink(_f any) bool {
 
 // IsSource returns whether a node is a source
 func (r *DummyRuler) IsSource(_f any) bool {
+	source := make(map[string]bool)
+	source["os.ReadFile"] = true
 	switch node := _f.(type) {
 	case *Node:
+		_, ok := source[node.Canonical]
+		if ok {
+			fmt.Println("is source!")
+			fmt.Println(node.Canonical)
+			fmt.Println()
+			return true
+		}
 		if node.Function != nil {
 			flag := false
 			f := node.Function
 			flag = flag || checkTrivalHandler(f) || checkBeegoHandler(f) || checkGinHandler(f)
 			if flag {
+				fmt.Println("is source!")
+				fmt.Println(node.Canonical)
+				fmt.Println()
 				return true
 			}
 		}

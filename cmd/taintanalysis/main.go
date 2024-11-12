@@ -16,7 +16,7 @@ func main() {
 	runner.PassThroughDstPath = "passthrough.json"
 	runner.TaintGraphDstPath = "taintgraph.json"
 	runner.UsePointerAnalysis = false
-	runner.PassThroughOnly = true
+	runner.PassThroughOnly = false
 	runner.InitOnly = false
 	runner.Debug = false
 	runner.PersistToNeo4j = false
