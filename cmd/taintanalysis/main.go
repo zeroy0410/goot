@@ -9,16 +9,16 @@ import (
 func main() {
 	// the ../../ takes you back to root of the project
 	// and the ... means scan packages in package pkg recursively
-	runner := taint.NewRunner("../../pkg...")
+	runner := taint.NewRunner("../../cmd/taintanalysis/case/")
 	// the module name is the name defined in go.mod
-	runner.ModuleName = "github.com/cokeBeer/goot"
+	runner.ModuleName = "github.com/cokeBeer/goot/cmd/taintanalysis/case"
 	//runner.PassThroughSrcPath = []string{"gostd1.19.json", "additional.json"}
 	runner.PassThroughDstPath = "passthrough.json"
 	runner.TaintGraphDstPath = "taintgraph.json"
 	runner.UsePointerAnalysis = false
 	runner.PassThroughOnly = true
 	runner.InitOnly = false
-	runner.Debug = true
+	runner.Debug = false
 	runner.PersistToNeo4j = false
 	runner.TargetFunc = ""
 	runner.Neo4jURI = "bolt://localhost:7687"
