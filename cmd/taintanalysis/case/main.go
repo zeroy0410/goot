@@ -1,19 +1,21 @@
-package defer_exectution_001_T
+package main
 
 import (
 	"fmt"
-	"os"
+	"os/exec"
 )
 
-func main(file_name string) {
-	__taint_src, _ := os.ReadFile(file_name)
-	defer_exectution_001_T(string(__taint_src))
+func main() {
+	var fileName string
+	_, err := fmt.Scanf("%s", &fileName)
+	if err != nil {
+		return
+	}
+	fmt.Println(fileName)
+	runCmd(fileName)
+	runCmd(fileName + "hahahah")
 }
 
-func defer_exectution_001_T(__taint_src string) {
-	___taint_sink(__taint_src)
-}
-
-func ___taint_sink(o interface{}) {
-	fmt.Println(o)
+func runCmd(fileName string) {
+	exec.Command("go", "run", fileName)
 }

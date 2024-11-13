@@ -2,8 +2,6 @@ package taint
 
 import (
 	"container/list"
-	"fmt"
-
 	"github.com/cokeBeer/goot/pkg/example/dataflow/taint/rule"
 	"golang.org/x/tools/go/callgraph"
 	"golang.org/x/tools/go/packages"
@@ -56,11 +54,6 @@ func (r *Runner) Run() error {
 		packages.NeedDeps
 	cfg := &packages.Config{Mode: mode}
 	initial, err := packages.Load(cfg, r.PkgPath...)
-	fmt.Println(initial)
-	//打印错误
-	for _, pkg := range initial {
-		fmt.Println(pkg.Errors)
-	}
 
 	if err != nil {
 		return err
@@ -71,11 +64,6 @@ func (r *Runner) Run() error {
 	prog.Build()
 
 	funcs := ssautil.AllFunctions(prog)
-
-	fmt.Println(len(funcs))
-	for f := range funcs {
-	    fmt.Println(f.Name())
-	}
 
 	interfaceHierarchy := NewInterfaceHierarchy(&funcs)
 

@@ -1,11 +1,11 @@
 package taint
 
 import (
-	"go/types"
-	"strings"
 	"fmt"
 	"github.com/cokeBeer/goot/pkg/example/dataflow/taint/rule"
+	"go/types"
 	"golang.org/x/tools/go/ssa"
+	"strings"
 )
 
 // DummyRuler is a dummy rule.Ruler used for test

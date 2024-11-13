@@ -9,7 +9,7 @@ import (
 func main() {
 	// the ../../ takes you back to root of the project
 	// and the ... means scan packages in package pkg recursively
-	runner := taint.NewRunner("../../cmd/taintanalysis/case/")
+	runner := taint.NewRunner("./cmd/taintanalysis/case/")
 	// the module name is the name defined in go.mod
 	runner.ModuleName = "github.com/cokeBeer/goot/cmd/taintanalysis/case"
 	//runner.PassThroughSrcPath = []string{"gostd1.19.json", "additional.json"}

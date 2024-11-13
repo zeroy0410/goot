@@ -71,15 +71,23 @@ func NewInterfaceHierarchy(allFuncs *map[*ssa.Function]bool) *InterfaceHierarchy
 	methodsMemo := make(map[Imethod][]*ssa.Function)
 
 	for f := range *allFuncs {
+		// 遍历 allFuncs 中的每一个函数 f
 		if f.Signature.Recv() == nil {
+			// 如果函数没有接收者（即不是方法），则进入此分支
 			// Package initializers can never be address-taken.
 			if f.Name() == "init" && f.Synthetic == "package initializer" {
+				// 如果函数的名字是 "init" 且其被标记为 "package initializer"（包初始化函数），则跳过此函数
 				continue
 			}
+			// 从 funcsBySig 映射中获取与 f.Signature 对应的函数列表
 			funcs, _ := funcsBySig.At(f.Signature).([]*ssa.Function)
+			// 将当前函数 f 添加到该列表中
 			funcs = append(funcs, f)
+			// 将更新后的函数列表重新存储到 funcsBySig 中，以 f.Signature 作为键
 			funcsBySig.Set(f.Signature, funcs)
 		} else {
+			// 如果函数有接收者（即是方法），则进入此分支
+			// 将当前方法 f 添加到 methodsByName 中，以方法名 f.Name() 作为键
 			methodsByName[f.Name()] = append(methodsByName[f.Name()], f)
 		}
 	}
