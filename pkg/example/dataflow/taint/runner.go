@@ -2,9 +2,12 @@ package taint
 
 import (
 	"container/list"
+	"fmt"
+	"github.com/zeroy0410/goot/cmd/taintanalysis/utils"
 	"github.com/zeroy0410/goot/pkg/example/dataflow/taint/rule"
 	"golang.org/x/tools/go/callgraph"
 	"golang.org/x/tools/go/callgraph/cha"
+	"golang.org/x/tools/go/callgraph/vta"
 	"golang.org/x/tools/go/packages"
 	"golang.org/x/tools/go/ssa"
 	"golang.org/x/tools/go/ssa/ssautil"
@@ -67,7 +70,7 @@ func (r *Runner) Run() error {
 
 	interfaceHierarchy := NewInterfaceHierarchy(&funcs)
 
-	var callGraph *callgraph.Graph
+	var cg *callgraph.Graph
 	if r.UsePointerAnalysis {
 		mainFuncs := make([]*ssa.Function, 0)
 		for _, pkg := range initial {
@@ -80,10 +83,15 @@ func (r *Runner) Run() error {
 			return new(NoMainPkgError)
 		}
 
-		result := cha.CallGraph(prog)
+		result := vta.CallGraph(ssautil.AllFunctions(prog), cha.CallGraph(prog))
 
-		callGraph = result
-		callGraph.DeleteSyntheticNodes()
+		vtaResult := utils.CallGraphStr(result)
+		for _, s := range vtaResult {
+			fmt.Println(s)
+		}
+
+		cg = result
+		cg.DeleteSyntheticNodes()
 	}
 
 	var ruler rule.Ruler
@@ -112,7 +120,7 @@ func (r *Runner) Run() error {
 		InterfaceHierarchy: interfaceHierarchy,
 		TaintGraph:         taintGraph,
 		UsePointerAnalysis: r.UsePointerAnalysis,
-		CallGraph:          callGraph,
+		CallGraph:          cg,
 		Ruler:              ruler,
 		PassThroughOnly:    r.PassThroughOnly,
 		Debug:              r.Debug,
