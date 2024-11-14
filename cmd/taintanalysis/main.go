@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/cokeBeer/goot/pkg/example/dataflow/taint"
+	"github.com/zeroy0410/goot/pkg/example/dataflow/taint"
 )
 
 func main() {
@@ -11,11 +11,11 @@ func main() {
 	// and the ... means scan packages in package pkg recursively
 	runner := taint.NewRunner("./cmd/taintanalysis/case/")
 	// the module name is the name defined in go.mod
-	runner.ModuleName = "github.com/cokeBeer/goot/cmd/taintanalysis/case"
+	runner.ModuleName = "github.com/zeroy0410/goot/cmd/taintanalysis/case"
 	//runner.PassThroughSrcPath = []string{"gostd1.19.json", "additional.json"}
 	runner.PassThroughDstPath = "passthrough.json"
 	runner.TaintGraphDstPath = "taintgraph.json"
-	runner.UsePointerAnalysis = false
+	runner.UsePointerAnalysis = true
 	runner.PassThroughOnly = false
 	runner.InitOnly = false
 	runner.Debug = false

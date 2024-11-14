@@ -5,5 +5,5 @@ type NoMainPkgError struct {
 }
 
 func (e *NoMainPkgError) Error() string {
-	return "No main package found in runner.PkgPath"
+	return "No main functions found in runner.PkgPath"
 }

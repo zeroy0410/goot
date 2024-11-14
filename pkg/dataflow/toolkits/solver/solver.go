@@ -5,13 +5,13 @@ import (
 	"math"
 	"reflect"
 
-	"github.com/cokeBeer/goot/pkg/dataflow/toolkits/graph"
-	"github.com/cokeBeer/goot/pkg/dataflow/toolkits/scalar"
-	"github.com/cokeBeer/goot/pkg/dataflow/util"
-	"github.com/cokeBeer/goot/pkg/dataflow/util/deque"
-	"github.com/cokeBeer/goot/pkg/dataflow/util/entry"
-	"github.com/cokeBeer/goot/pkg/dataflow/util/queue"
 	"github.com/dnote/color"
+	"github.com/zeroy0410/goot/pkg/dataflow/toolkits/graph"
+	"github.com/zeroy0410/goot/pkg/dataflow/toolkits/scalar"
+	"github.com/zeroy0410/goot/pkg/dataflow/util"
+	"github.com/zeroy0410/goot/pkg/dataflow/util/deque"
+	"github.com/zeroy0410/goot/pkg/dataflow/util/entry"
+	"github.com/zeroy0410/goot/pkg/dataflow/util/queue"
 	"golang.org/x/tools/go/ssa"
 )
 
@@ -26,9 +26,9 @@ type Solver struct {
 // a: 数据流分析的实例，debug: 是否启用调试模式
 func Solve(a scalar.FlowAnalysis, debug bool) {
 	s := new(Solver)
-	s.Analysis = a // 设置分析实例
+	s.Analysis = a  // 设置分析实例
 	s.Debug = debug // 设置调试标志
-	s.DoAnalysis() // 执行分析
+	s.DoAnalysis()  // 执行分析
 }
 
 // DoAnalysis 执行数据流分析
@@ -52,7 +52,7 @@ func (s *Solver) DoAnalysis() int {
 	for numComputations := 0; ; numComputations++ {
 		e := q.Poll() // 获取队列中的下一个节点
 		if e == nil { // 如果队列为空，分析结束
-			a.End(universe) // 结束分析
+			a.End(universe)        // 结束分析
 			return numComputations // 返回总计算次数
 		}
 
@@ -153,12 +153,12 @@ func (s *Solver) initFlow(universe []*entry.Entry, in *map[any]any, out *map[any
 // 构建图的宇宙表示，返回入口的集合
 // g: 单元图，entryFlow: 初始流，isForward: 是否为前向分析
 func (s *Solver) newUniverse(g *graph.UnitGraph, entryFlow *map[any]any, isForward bool) []*entry.Entry {
-	n := g.Size() // 图的大小
-	universe := make([]*entry.Entry, 0) // 创建入口集合
-	q := deque.New() // 用于处理强连通分量的双端队列
+	n := g.Size()                                     // 图的大小
+	universe := make([]*entry.Entry, 0)               // 创建入口集合
+	q := deque.New()                                  // 用于处理强连通分量的双端队列
 	visited := make(map[ssa.Instruction]*entry.Entry) // 记录访问过的入口
-	superEntry := entry.New(nil, nil) // 创建一个超级入口
-	var entries []ssa.Instruction // 实际的入口指令集合
+	superEntry := entry.New(nil, nil)                 // 创建一个超级入口
+	var entries []ssa.Instruction                     // 实际的入口指令集合
 	var actualEntries []ssa.Instruction
 
 	// 根据分析方向选择入口

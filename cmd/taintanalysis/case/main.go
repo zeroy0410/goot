@@ -12,10 +12,11 @@ func main() {
 		return
 	}
 	fmt.Println(fileName)
-	runCmd(fileName)
-	runCmd(fileName + "hahahah")
+	runCmd(fileName, "hehe")
+	runCmd(fileName+"hahahah", "hehe")
 }
 
-func runCmd(fileName string) {
+func runCmd(fileName string, hahaName string) {
 	exec.Command("go", "run", fileName)
+	exec.Command("go", hahaName)
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/cokeBeer/goot/pkg/example/dataflow/constantpropagation"
+	"github.com/zeroy0410/goot/pkg/example/dataflow/constantpropagation"
 )
 
 const src = `package main

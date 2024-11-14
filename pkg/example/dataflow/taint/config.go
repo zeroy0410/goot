@@ -3,7 +3,7 @@ package taint
 import (
 	"container/list"
 
-	"github.com/cokeBeer/goot/pkg/example/dataflow/taint/rule"
+	"github.com/zeroy0410/goot/pkg/example/dataflow/taint/rule"
 	"golang.org/x/tools/go/callgraph"
 	"golang.org/x/tools/go/ssa"
 )

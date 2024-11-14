@@ -6,7 +6,7 @@ import (
 	// "fmt"
 	"fmt"
 
-	"github.com/cokeBeer/goot/pkg/dataflow/golang/switcher"
+	"github.com/zeroy0410/goot/pkg/dataflow/golang/switcher"
 	"golang.org/x/tools/go/ssa"
 )
 
@@ -78,7 +78,7 @@ func (s *TypeAssertionSwitcher) CasePhi(inst *ssa.Phi) {
 }
 
 func (s *TypeAssertionSwitcher) CaseCall(inst *ssa.Call) {
-    fmt.Println(inst.Name())
+	fmt.Println(inst.Name())
 	fmt.Println(inst.Call.Value)
 	fmt.Println(inst.Call.Args)
 	fmt.Println()

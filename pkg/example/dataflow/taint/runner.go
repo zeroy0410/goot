@@ -2,10 +2,10 @@ package taint
 
 import (
 	"container/list"
-	"github.com/cokeBeer/goot/pkg/example/dataflow/taint/rule"
+	"github.com/zeroy0410/goot/pkg/example/dataflow/taint/rule"
 	"golang.org/x/tools/go/callgraph"
+	"golang.org/x/tools/go/callgraph/cha"
 	"golang.org/x/tools/go/packages"
-	"golang.org/x/tools/go/pointer"
 	"golang.org/x/tools/go/ssa"
 	"golang.org/x/tools/go/ssa/ssautil"
 )
@@ -69,26 +69,20 @@ func (r *Runner) Run() error {
 
 	var callGraph *callgraph.Graph
 	if r.UsePointerAnalysis {
-		mainPkgs := make([]*ssa.Package, 0)
+		mainFuncs := make([]*ssa.Function, 0)
 		for _, pkg := range initial {
 			mainPkg := prog.Package(pkg.Types)
 			if mainPkg != nil && mainPkg.Pkg.Name() == "main" && mainPkg.Func("main") != nil {
-				mainPkgs = append(mainPkgs, mainPkg)
+				mainFuncs = append(mainFuncs, mainPkg.Func("main"))
 			}
 		}
-		if len(mainPkgs) == 0 {
+		if len(mainFuncs) == 0 {
 			return new(NoMainPkgError)
 		}
-		config := &pointer.Config{
-			Mains:          mainPkgs,
-			BuildCallGraph: true,
-		}
 
-		result, err := pointer.Analyze(config)
-		if err != nil {
-			return err
-		}
-		callGraph = result.CallGraph
+		result := cha.CallGraph(prog)
+
+		callGraph = result
 		callGraph.DeleteSyntheticNodes()
 	}
 
@@ -102,7 +96,10 @@ func (r *Runner) Run() error {
 
 	passThroughContainter := make(map[string]*PassThroughCache)
 	if r.PassThroughSrcPath != nil {
-		FetchPassThrough(&passThroughContainter, r.PassThroughSrcPath)
+		err := FetchPassThrough(&passThroughContainter, r.PassThroughSrcPath)
+		if err != nil {
+			return err
+		}
 	}
 
 	initMap := make(map[string]*ssa.Function)

@@ -14,7 +14,7 @@
 	- [Thanks](#thanks)
 ## What is goot?
 
-[goot](https://github.com/cokeBeer/goot) is a static analysis framework for Go. goot is easy-to-learn, easy-to-use and highly extensible, allowing you to easily develop new analyses on top of it.
+[goot](https://github.com/zeroy0410/goot) is a static analysis framework for Go. goot is easy-to-learn, easy-to-use and highly extensible, allowing you to easily develop new analyses on top of it.
 
 Currently, goot provides the following major analysis components (and more analyses are on the way):
 
@@ -28,7 +28,7 @@ Currently, goot provides the following major analysis components (and more analy
 Intall goot by
 
 ```
-go get -u github.com/cokeBeer/goot
+go get -u github.com/zeroy0410/goot
 ```
 
 ##  Use taint analysis
@@ -36,7 +36,7 @@ Write code below in the project to be analysed, e.g `cmd/taint/main.go`
 ```go
 package main
 
-import "github.com/cokeBeer/goot/pkg/example/dataflow/taint"
+import "github.com/zeroy0410/goot/pkg/example/dataflow/taint"
 
 func main() {
 	// if this file is cmd/taint/main.go
@@ -44,7 +44,7 @@ func main() {
 	// the path should be "../../pkg"
 	// or "../../pkg..." for all packages under pkg
 	runner := taint.NewRunner("relative/path/to/package")
-	// for this project, is "github.com/cokeBeer/goot"
+	// for this project, is "github.com/zeroy0410/goot"
 	runner.ModuleName = "module-name"
 	runner.PassThroughDstPath = "passthrough.json"
 	runner.TaintGraphDstPath = "taintgraph.json"

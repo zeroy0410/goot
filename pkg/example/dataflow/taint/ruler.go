@@ -2,7 +2,7 @@ package taint
 
 import (
 	"fmt"
-	"github.com/cokeBeer/goot/pkg/example/dataflow/taint/rule"
+	"github.com/zeroy0410/goot/pkg/example/dataflow/taint/rule"
 	"go/types"
 	"golang.org/x/tools/go/ssa"
 	"strings"

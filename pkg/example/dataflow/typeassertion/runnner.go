@@ -8,8 +8,8 @@ import (
 	"go/types"
 	"log"
 
-	"github.com/cokeBeer/goot/pkg/dataflow/toolkits/graph"
-	"github.com/cokeBeer/goot/pkg/dataflow/toolkits/solver"
+	"github.com/zeroy0410/goot/pkg/dataflow/toolkits/graph"
+	"github.com/zeroy0410/goot/pkg/dataflow/toolkits/solver"
 	"golang.org/x/tools/go/ssa"
 	"golang.org/x/tools/go/ssa/ssautil"
 )

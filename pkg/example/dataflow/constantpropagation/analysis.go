@@ -5,11 +5,11 @@ import (
 	"os"
 	"sort"
 
-	"github.com/cokeBeer/goot/pkg/dataflow/golang/switcher"
-	"github.com/cokeBeer/goot/pkg/dataflow/toolkits/graph"
-	"github.com/cokeBeer/goot/pkg/dataflow/toolkits/scalar"
-	"github.com/cokeBeer/goot/pkg/dataflow/util/entry"
 	"github.com/dnote/color"
+	"github.com/zeroy0410/goot/pkg/dataflow/golang/switcher"
+	"github.com/zeroy0410/goot/pkg/dataflow/toolkits/graph"
+	"github.com/zeroy0410/goot/pkg/dataflow/toolkits/scalar"
+	"github.com/zeroy0410/goot/pkg/dataflow/util/entry"
 	"golang.org/x/tools/go/ssa"
 )
 
