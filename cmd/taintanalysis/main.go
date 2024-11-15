@@ -1,9 +1,8 @@
 package main
 
 import (
-	"log"
-
 	"github.com/zeroy0410/goot/pkg/example/dataflow/taint"
+	"log"
 )
 
 func main() {

@@ -3,8 +3,8 @@ package taint
 import (
 	"container/list"
 	"fmt"
-	"github.com/zeroy0410/goot/cmd/taintanalysis/utils"
 	"github.com/zeroy0410/goot/pkg/example/dataflow/taint/rule"
+	"go/types"
 	"golang.org/x/tools/go/callgraph"
 	"golang.org/x/tools/go/callgraph/cha"
 	"golang.org/x/tools/go/callgraph/vta"
@@ -31,6 +31,21 @@ type Runner struct {
 	Neo4jURI           string
 	TargetFunc         string
 	PassBack           bool
+}
+
+func getTypes(t types.Type) (types.Type, string) {
+	switch u := t.Underlying().(type) {
+	case *types.Interface:
+		return u, "interface"
+	case *types.Struct:
+		return u, "struct"
+	case *types.Basic:
+		return u, "basic"
+	case *types.Pointer:
+		return getTypes(u.Elem())
+	default:
+		return t, "unknown"
+	}
 }
 
 // NewRunner returns a *taint.Runner
@@ -84,10 +99,30 @@ func (r *Runner) Run() error {
 		}
 
 		result := vta.CallGraph(ssautil.AllFunctions(prog), cha.CallGraph(prog))
-
-		vtaResult := utils.CallGraphStr(result)
-		for _, s := range vtaResult {
-			fmt.Println(s)
+		resultTypes := vta.GetTypeAsserts(ssautil.AllFunctions(prog), cha.CallGraph(prog))
+		for node, typ := range resultTypes {
+			if (*node).X.Parent().Package() != nil {
+				fmt.Println("Package: ", (*node).X.Parent().Package())
+			}
+			fmt.Println("function: ", (*node).X.Parent().Name())
+			fmt.Println("Node: ", (*node).X)
+			fmt.Print("assertion: ", (*node).AssertedType)
+			realAssertedType, assertedTypeStr := getTypes((*node).AssertedType)
+			fmt.Print("    ", assertedTypeStr)
+			fmt.Println()
+			fmt.Println("Possible Types: ")
+			for _, t := range typ {
+				fmt.Print("    ", t)
+				realType, tTypeStr := getTypes(t)
+				fmt.Print("    ", tTypeStr)
+				if assertedTypeStr == "struct" && tTypeStr == "interface" {
+					realTypeI := realType.(*types.Interface)
+					realTypeI.Complete()
+					fmt.Print("    ", types.Implements(realAssertedType.(*types.Struct), realTypeI))
+				}
+				fmt.Println()
+			}
+			fmt.Println("-----------------------")
 		}
 
 		cg = result

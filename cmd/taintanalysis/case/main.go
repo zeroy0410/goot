@@ -1,22 +1,21 @@
 package main
 
-import (
-	"fmt"
-	"net"
-	"time"
-)
+import "fmt"
 
-func hello(i fmt.Stringer) {
-	process(i)
+func processValue(v interface{}) {
+	switch v.(type) {
+	case string:
+		fmt.Println("String value:", v)
+	case int:
+		fmt.Println("Integer value:", v)
+	default:
+		fmt.Println("Unknown type")
+	}
 }
 
 func main() {
-	var a time.Time
-	var b net.IP
-	process(a)
-	hello(b)
-}
+	var i interface{} = true
 
-func process(i fmt.Stringer) {
-	i.String()
+	// 我们没有处理 bool 类型的情况
+	processValue(i)
 }
