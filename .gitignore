@@ -93,3 +93,6 @@ pkg/pta
 cmd/pointer
 cmd/dump
 knowledge
+
+cmd/taintanalysis/case/
+cmd/taintanalysis/nilaway/

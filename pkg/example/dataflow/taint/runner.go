@@ -6,11 +6,11 @@ import (
 	"github.com/zeroy0410/goot/pkg/example/dataflow/taint/rule"
 	"go/types"
 	"golang.org/x/tools/go/callgraph"
-	"golang.org/x/tools/go/callgraph/cha"
 	"golang.org/x/tools/go/callgraph/vta"
 	"golang.org/x/tools/go/packages"
 	"golang.org/x/tools/go/ssa"
 	"golang.org/x/tools/go/ssa/ssautil"
+	"strings"
 )
 
 // Runner represents a analysis runner
@@ -34,17 +34,74 @@ type Runner struct {
 }
 
 func getTypes(t types.Type) (types.Type, string) {
-	switch u := t.Underlying().(type) {
-	case *types.Interface:
-		return u, "interface"
-	case *types.Struct:
-		return u, "struct"
-	case *types.Basic:
-		return u, "basic"
+	switch tt := t.(type) {
 	case *types.Pointer:
-		return getTypes(u.Elem())
+		_, kind := getTypes(tt.Elem())
+		return tt, "pointer to " + kind
+	case *types.Named:
+		return tt.Underlying(), tt.Underlying().String()
+	case *types.Interface:
+		return tt, "interface"
+	case *types.Struct:
+		return tt, "struct"
 	default:
-		return t, "unknown"
+		return tt, fmt.Sprintf("%T", tt)
+	}
+}
+
+func extractInterfaceFromPointer(t types.Type) (*types.Interface, bool) {
+	ptrType, ok := t.(*types.Pointer)
+	if !ok {
+		return nil, false
+	}
+
+	elemType := ptrType.Elem()
+	for {
+		switch tt := elemType.(type) {
+		case *types.Named:
+			elemType = tt.Underlying()
+		case *types.Interface:
+			return tt, true
+		default:
+			return nil, false
+		}
+	}
+}
+
+func PrintAssertionsInfo(resultTypes map[*ssa.TypeAssert][]types.Type) {
+	for node, possibleTypes := range resultTypes {
+		parentFunc := node.X.Parent()
+		if pkg := parentFunc.Package(); pkg != nil {
+			fmt.Println("Package: ", pkg)
+		}
+		fmt.Println("Function: ", parentFunc.Name())
+		fmt.Println("Node: ", node.X)
+		fmt.Print("Assertion: ", node.AssertedType)
+
+		assertedType, assertedTypeStr := getTypes(node.AssertedType)
+		fmt.Print("    ", assertedTypeStr)
+		fmt.Println()
+		fmt.Println("Possible Types: ")
+
+		for _, typ := range possibleTypes {
+			fmt.Print("    ", typ)
+			actualType, typeStr := getTypes(typ)
+			fmt.Print("    ", typeStr)
+
+			if strings.Contains(assertedTypeStr, "pointer to struct") && strings.Contains(typeStr, "pointer to interface") {
+				interfaceType, ok := extractInterfaceFromPointer(actualType)
+				if !ok {
+					fmt.Print("    Unable to extract interface type")
+					continue
+				}
+
+				interfaceType.Complete()
+				implements := types.Implements(assertedType, interfaceType)
+				fmt.Print("    Implements: ", implements)
+			}
+			fmt.Println()
+		}
+		fmt.Println("-----------------------")
 	}
 }
 
@@ -70,7 +127,7 @@ func (r *Runner) Run() error {
 		packages.NeedTypesSizes |
 		packages.NeedTypes |
 		packages.NeedDeps
-	cfg := &packages.Config{Mode: mode}
+	cfg := &packages.Config{Mode: mode, Dir: "C:/Users/zeroy/Documents/Code/goot/cmd/taintanalysis/nilaway/"}
 	initial, err := packages.Load(cfg, r.PkgPath...)
 
 	if err != nil {
@@ -98,32 +155,9 @@ func (r *Runner) Run() error {
 			return new(NoMainPkgError)
 		}
 
-		result := vta.CallGraph(ssautil.AllFunctions(prog), cha.CallGraph(prog))
-		resultTypes := vta.GetTypeAsserts(ssautil.AllFunctions(prog), cha.CallGraph(prog))
-		for node, typ := range resultTypes {
-			if (*node).X.Parent().Package() != nil {
-				fmt.Println("Package: ", (*node).X.Parent().Package())
-			}
-			fmt.Println("function: ", (*node).X.Parent().Name())
-			fmt.Println("Node: ", (*node).X)
-			fmt.Print("assertion: ", (*node).AssertedType)
-			realAssertedType, assertedTypeStr := getTypes((*node).AssertedType)
-			fmt.Print("    ", assertedTypeStr)
-			fmt.Println()
-			fmt.Println("Possible Types: ")
-			for _, t := range typ {
-				fmt.Print("    ", t)
-				realType, tTypeStr := getTypes(t)
-				fmt.Print("    ", tTypeStr)
-				if assertedTypeStr == "struct" && tTypeStr == "interface" {
-					realTypeI := realType.(*types.Interface)
-					realTypeI.Complete()
-					fmt.Print("    ", types.Implements(realAssertedType.(*types.Struct), realTypeI))
-				}
-				fmt.Println()
-			}
-			fmt.Println("-----------------------")
-		}
+		result := vta.CallGraph(ssautil.AllFunctions(prog), nil)
+		resultTypes := vta.GetTypeAsserts(ssautil.AllFunctions(prog), nil)
+		PrintAssertionsInfo(resultTypes)
 
 		cg = result
 		cg.DeleteSyntheticNodes()

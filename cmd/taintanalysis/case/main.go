@@ -7,7 +7,7 @@ type Person interface {
 }
 
 type Stu struct {
-	Name string
+	Name Person
 	Age  int
 }
 
@@ -26,11 +26,15 @@ func (t *Tea) Run() {
 
 func main() {
 	// 创建 Stu 和 Tea 的实例
-	stu1 := &Stu{Name: "Alice", Age: 20}
-	tea1 := &Stu{Name: "Bob", Age: 30}
+	stu1 := Stu{Name: &Stu{}, Age: 20}
+	stu2 := Stu{Name: &Stu{}, Age: 20}
+	_ = stu2.Name.(*Tea)
+	_ = stu1.Name.(*Tea)
+	stu3 := (*Stu)(nil)
+	stu3.Name = &Stu{Name: &Tea{}}
 
 	// 创建一个 Person 类型的切片，存储 Stu 和 Tea 的实例
-	persons := []Person{stu1, tea1}
+	persons := []Person{&stu1, &stu2}
 
 	// 遍历切片并调用 Run 方法
 	for _, person := range persons {
